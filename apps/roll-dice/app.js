@@ -47,25 +47,26 @@ diceTypes.addEventListener('change', centerDie);
 new ResizeObserver(resizeDicePicker).observe(dicePicker);
 resizeDicePicker();
 
-for (const button of form.querySelectorAll('[data-step]')) {
+const removeDie = document.querySelector('#remove-die');
+const addDie = document.querySelector('#add-die');
+const maxDice = 24;
+let count = 1;
+
+for (const [button, step] of [[removeDie, -1], [addDie, 1]]) {
   button.addEventListener('click', () => {
-    const min = Number(quantity.min);
-    const max = Number(quantity.max);
-    const count = quantity.valueAsNumber || min;
-    const next = Math.trunc(count) + Number(button.dataset.step);
-    quantity.valueAsNumber = Math.min(max, Math.max(min, next));
+    count = (count - 1 + step + maxDice) % maxDice + 1;
+    quantity.value = String(count);
   });
 }
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  const count = quantity.valueAsNumber;
   const faces = Number(sides.value);
   const dice = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * faces));
   const total = dice.reduce((sum, die) => sum + die, 0);
   const details = count > 1 ? ` · Dados: ${dice.join(', ')}` : '';
   DiceView.render(tray, dice, faces);
-  result.textContent = `${count}d${faces} · Total: ${total}${details}`;
+  result.textContent = `${count} x D${faces} · Total: ${total}${details}`;
 });
 
 if ('serviceWorker' in navigator) {

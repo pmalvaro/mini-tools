@@ -22,13 +22,13 @@
           <button class="dice-arrow" type="button" aria-label="Ver dados a la izquierda" aria-controls="dice-types" hidden><span aria-hidden="true">‹</span></button>
           <div class="dice-types" id="dice-types">
             <div class="dice-track">
-              <label><input type="radio" name="sides" value="4" required><span>d4</span></label>
-              <label><input type="radio" name="sides" value="6"><span>d6</span></label>
-              <label><input type="radio" name="sides" value="8"><span>d8</span></label>
-              <label><input type="radio" name="sides" value="10"><span>d10</span></label>
-              <label><input type="radio" name="sides" value="12"><span>d12</span></label>
-              <label><input type="radio" name="sides" value="20" checked><span>d20</span></label>
-              <label><input type="radio" name="sides" value="100"><span>d100</span></label>
+              <label><input type="radio" name="sides" value="4" required><span>D4</span></label>
+              <label><input type="radio" name="sides" value="6"><span>D6</span></label>
+              <label><input type="radio" name="sides" value="8"><span>D8</span></label>
+              <label><input type="radio" name="sides" value="10"><span>D10</span></label>
+              <label><input type="radio" name="sides" value="12"><span>D12</span></label>
+              <label><input type="radio" name="sides" value="20" checked><span>D20</span></label>
+              <label><input type="radio" name="sides" value="100"><span>D100</span></label>
             </div>
           </div>
           <button class="dice-arrow" type="button" aria-label="Ver dados a la derecha" aria-controls="dice-types" hidden><span aria-hidden="true">›</span></button>
@@ -36,11 +36,11 @@
       </fieldset>
       <div class="roll-controls">
         <div class="quantity-field">
-          <label for="quantity">Número de dados</label>
+          <div id="quantity-label">Número de dados</div>
           <div class="stepper">
-            <button type="button" data-step="-1" aria-label="Quitar un dado">−</button>
-            <input id="quantity" name="quantity" type="number" min="1" max="100" value="1" required>
-            <button type="button" data-step="1" aria-label="Añadir un dado">+</button>
+            <button id="remove-die" type="button" aria-label="Quitar un dado">−</button>
+            <output id="quantity" for="remove-die add-die" aria-labelledby="quantity-label">1</output>
+            <button id="add-die" type="button" aria-label="Añadir un dado">+</button>
           </div>
         </div>
         <button id="roll" type="submit">Lanzar</button>
