@@ -28,7 +28,7 @@ Este proyecto reúne herramientas web independientes. Cada herramienta debe pode
 
 ## Repositorio y publicación
 
-El repositorio remoto es `pmalvaro/mini-tools` y es privado. GitHub Pages es el destino previsto. Configura GitHub Actions como origen para desplegar el artefacto desde `main`. Comprueba que el plan admite Pages en repositorios privados y revisa la visibilidad del sitio antes de habilitarlo. La privacidad del repositorio y la del sitio se gestionan por separado.
+El repositorio remoto es `pmalvaro/mini-tools` y es público. GitHub Actions despliega el catálogo y las apps desde `main` en el sitio público de GitHub Pages.
 
 ## Commits
 

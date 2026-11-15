@@ -17,7 +17,7 @@ Desde la raíz, ejecuta `python3 -m http.server 8000` y abre `http://localhost:8
 
 ## Publicar en GitHub Pages
 
-1. Sube el proyecto al repositorio privado `pmalvaro/mini-tools`. GitHub Pages requiere un plan compatible para publicar desde repositorios privados.
+1. Sube el proyecto al repositorio público `pmalvaro/mini-tools`.
 2. En **Settings → Pages → Build and deployment → Source**, elige **GitHub Actions**. Revisa allí la visibilidad del sitio.
 3. Ejecuta **Publicar en GitHub Pages** desde la pestaña **Actions**. El flujo publica `index.html`, `styles.css` y `apps/` como archivos estáticos. Después se ejecuta automáticamente cuando cambian esos archivos en `main`.
 4. Abre la URL que muestre Pages. La ruta de cada herramienta será `https://pmalvaro.github.io/mini-tools/apps/mi-herramienta/` con el dominio predeterminado.
