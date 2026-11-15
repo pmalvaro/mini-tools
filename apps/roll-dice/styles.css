@@ -1,11 +1,26 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
   font-family: system-ui, sans-serif;
   line-height: 1.6;
+  --page: #161e19;
+  --text: #f1f0e7;
+  --surface: #222f27;
+  --surface-hover: #304337;
+  --border: #7e9384;
+  --accent: #9ad4ac;
+  --accent-hover: #b3e1bf;
+  --accent-text: #10291a;
+  --focus: #a7dfb9;
+  --felt-light: #3d9469;
+  --felt-dark: #205b42;
+  --felt-edge: #286347;
+  background: var(--page);
 }
 
 body {
   margin: 0;
+  background: var(--page);
+  color: var(--text);
 }
 
 main {
@@ -22,8 +37,10 @@ input[type="number"], button, .dice-types span {
   box-sizing: border-box;
   min-height: 2.75rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid GrayText;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--text);
   font: inherit;
 }
 
@@ -32,7 +49,7 @@ button, .dice-types label {
 }
 
 :focus-visible {
-  outline: 2px solid Highlight;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
 }
 
@@ -68,15 +85,29 @@ fieldset {
   place-items: center;
 }
 
-.dice-types input:checked + span {
-  background: #292044;
-  color: #fff;
+.dice-types input:checked + span,
+#roll {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
 }
 
 .dice-types input:focus-visible + span {
-  outline: 2px solid Highlight;
+  outline: 2px solid var(--focus);
   outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .dice-types label:hover input:not(:checked) + span,
+  .stepper button:hover {
+    background: var(--surface-hover);
+  }
+
+  #roll:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+  }
 }
 
 .quantity-field {
@@ -94,11 +125,6 @@ fieldset {
   text-align: center;
 }
 
-#roll {
-  background: #292044;
-  color: #fff;
-}
-
 .dice-tray:not(:empty) {
   display: flex;
   flex-wrap: wrap;
@@ -108,12 +134,11 @@ fieldset {
   margin-top: 1rem;
   padding: 1.5rem 0.75rem;
   overflow: hidden;
-  border: 1px solid #216445;
+  border: 1px solid var(--felt-edge);
   border-radius: 1rem;
   background:
     repeating-linear-gradient(132deg, #ffffff06 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at 50% 25%, #207952, #0d4b33 85%);
-  color: #fff;
+    radial-gradient(ellipse at 50% 25%, var(--felt-light), var(--felt-dark) 85%);
 }
 
 .die {
@@ -162,4 +187,8 @@ fieldset {
 
 #result:not(:empty) {
   margin-top: 1rem;
+  padding: 0.65rem 0.85rem;
+  border-inline-start: 3px solid var(--accent);
+  border-radius: 0.5rem;
+  background: var(--surface);
 }
