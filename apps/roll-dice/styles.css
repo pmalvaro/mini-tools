@@ -108,9 +108,11 @@ fieldset {
   margin-top: 1rem;
   padding: 1.5rem 0.75rem;
   overflow: hidden;
-  border: 1px solid #594872;
+  border: 1px solid #216445;
   border-radius: 1rem;
-  background: radial-gradient(ellipse at top, #3c3057, #201831 80%);
+  background:
+    repeating-linear-gradient(132deg, #ffffff06 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at 50% 25%, #207952, #0d4b33 85%);
   color: #fff;
 }
 
@@ -123,12 +125,41 @@ fieldset {
   width: clamp(7rem, 30vw, 10.5rem);
 }
 
-.remaining-dice {
-  font-weight: 700;
+.die-light-roll {
+  --roll-turn: 1turn;
+  animation: light-roll 800ms ease-out both;
+}
+
+.die-light-roll:nth-child(even) {
+  --roll-turn: -1turn;
+}
+
+@keyframes light-roll {
+  from {
+    transform: translateY(-0.75rem) rotate(calc(var(--roll-turn) * -1)) scale(0.72);
+  }
+  58% {
+    transform: translateY(0.2rem) rotate(calc(var(--roll-turn) * 0.09)) scale(1.04);
+  }
+  78% {
+    transform: translateY(-0.25rem) rotate(calc(var(--roll-turn) * -0.03)) scale(0.97);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .die-light-roll {
+    animation: none;
+  }
 }
 
 #result {
-  margin-top: 1rem;
   font-weight: 600;
   overflow-wrap: anywhere;
+}
+
+#result:not(:empty) {
+  margin-top: 1rem;
 }

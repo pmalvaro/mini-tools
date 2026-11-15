@@ -163,12 +163,12 @@ const DiceView = (() => {
       corners.forEach(([x, y], index) => index ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
       ctx.closePath();
       const gradient = ctx.createLinearGradient(20, 15, 104, 115);
-      gradient.addColorStop(0, `hsl(267 48% ${35 + brightness * 32}%)`);
-      gradient.addColorStop(1, `hsl(280 49% ${19 + brightness * 26}%)`);
+      gradient.addColorStop(0, `hsl(0 0% ${10 + brightness * 22}%)`);
+      gradient.addColorStop(1, `hsl(0 0% ${4 + brightness * 14}%)`);
       ctx.fillStyle = gradient;
       ctx.fill();
       const edgeOpacity = 0.25 * (0.18 + brightness * 0.35);
-      ctx.strokeStyle = `rgba(221, 199, 248, ${edgeOpacity})`;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${edgeOpacity})`;
       ctx.lineWidth = 0.9;
       ctx.stroke();
 
@@ -188,12 +188,12 @@ const DiceView = (() => {
         : 19 + settled * (isWinningFace ? 5 : -3);
       ctx.globalAlpha = isWinningFace ? 1 : 1 - settled * 0.38;
       ctx.font = `bold ${fontSize}px system-ui`;
-      ctx.strokeStyle = '#25143b';
+      ctx.strokeStyle = '#080808';
       ctx.lineWidth = isHundredSided ? 0.8 : 2;
       const label = labels.length > 6 && labels[i] === 6 ? '6.' : String(labels[i]);
       const textWidth = isHundredSided ? 15 : 128;
       ctx.strokeText(label, 0, 0, textWidth);
-      ctx.fillStyle = '#fff5df';
+      ctx.fillStyle = '#fff';
       ctx.fillText(label, 0, 0, textWidth);
       ctx.restore();
     }
@@ -202,39 +202,39 @@ const DiceView = (() => {
   let frame;
   function render(tray, dice, faces) {
     cancelAnimationFrame(frame);
+    const realtimeLimit = 12;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (faces === 100 && !meshes.has(faces)) meshes.set(faces, hundredSidedMesh());
     const mesh = meshes.get(faces);
     const labels = Array.from({ length: faces }, (_, i) => i + 1);
-    const models = dice.slice(0, 12).map((value, index) => {
+    const resolution = Math.min(window.devicePixelRatio || 1, dice.length > realtimeLimit ? 1.5 : 3);
+    const models = dice.map((value, index) => {
       const canvas = document.createElement('canvas');
       canvas.className = 'die';
       if (faces === 100) canvas.classList.add('die-d100');
-      const resolution = Math.min(window.devicePixelRatio || 1, 3);
       canvas.width = canvas.height = Math.round(128 * resolution);
       const context = canvas.getContext('2d');
       context?.scale(resolution, resolution);
-      return { canvas, context, faceIndex: value - 1, direction: index % 2 ? -1 : 1 };
+      const faceIndex = value - 1;
+      const direction = index % 2 ? -1 : 1;
+      const realtime = !reducedMotion && index < realtimeLimit;
+      if (context && !realtime) {
+        draw(context, mesh, faceIndex, labels, 1, direction);
+        if (!reducedMotion) canvas.classList.add('die-light-roll');
+      }
+      return { canvas, context, faceIndex, direction, realtime, delay: index * 24 };
     });
 
     tray.replaceChildren(...models.map(({ canvas }) => canvas));
-    if (dice.length > models.length) {
-      const remaining = document.createElement('span');
-      remaining.className = 'remaining-dice';
-      remaining.textContent = `+${dice.length - models.length}`;
-      tray.append(remaining);
-    }
-
-    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let rolling = models.filter(({ realtime, context }) => realtime && context);
     const start = performance.now();
     function animate(now) {
-      let rolling = false;
-      models.forEach(({ context, faceIndex, direction }, index) => {
-        if (!context) return;
-        const progress = reducedMotion ? 1 : Math.min(1, Math.max(0, (now - start - index * 24) / 800));
-        rolling ||= progress < 1;
+      rolling = rolling.filter(({ context, faceIndex, direction, delay }) => {
+        const progress = Math.min(1, Math.max(0, (now - start - delay) / 800));
         draw(context, mesh, faceIndex, labels, progress, direction);
+        return progress < 1;
       });
-      if (rolling) frame = requestAnimationFrame(animate);
+      if (rolling.length) frame = requestAnimationFrame(animate);
     }
     animate(start);
   }
