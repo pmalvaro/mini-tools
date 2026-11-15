@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151719">
+  <title>Interval Timer</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Interval Timer</h1>
+    </header>
+    <div class="layout">
+      <section class="timer" aria-label="Temporizador">
+        <h2 id="active-title" hidden></h2>
+        <div class="dial">
+          <div class="dial-face">
+            <p id="phase" role="status">En espera</p>
+            <div id="time" role="timer" aria-label="Tiempo restante">00:00</div>
+            <p id="round">Tiempo total</p>
+          </div>
+        </div>
+        <button class="primary" id="start" type="button">Empezar</button>
+        <button id="reset" type="button" disabled>Reiniciar</button>
+      </section>
+      <section class="card routines" aria-labelledby="routines-title">
+        <div class="routines-header">
+          <h2 id="routines-title">Mis rutinas</h2>
+          <button id="create" type="button" aria-label="Nueva rutina" aria-controls="editor">+</button>
+          <span id="count">0/10</span>
+        </div>
+        <section id="editor" hidden aria-labelledby="editor-title">
+          <h2 id="editor-title">Nueva rutina</h2>
+          <form id="setup">
+            <fieldset id="fields">
+              <div class="inputs">
+                <label>Calentamiento (s)<input name="warm" type="number" inputmode="numeric" min="0" max="3600" value="60" required></label>
+                <label>Actividad (s)<input name="work" type="number" inputmode="numeric" min="1" max="3600" value="40" required></label>
+                <label>Descanso (s)<input name="rest" type="number" inputmode="numeric" min="0" max="3600" value="20" required></label>
+                <label>Rondas<input name="rounds" type="number" inputmode="numeric" min="1" max="99" value="5" required></label>
+              </div>
+              <label class="sound"><input id="sound" type="checkbox" checked> Avisos sonoros</label>
+              <label>Nombre de la rutina<input name="title" type="text" maxlength="40" placeholder="Ej. HIIT corto"></label>
+              <div class="actions">
+                <button id="save" type="submit">Guardar rutina</button>
+                <button id="cancel" type="button">Cancelar</button>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+        <p id="empty">Todavía no tienes rutinas guardadas.</p>
+        <ul id="routines"></ul>
+        <p id="message" role="status"></p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
