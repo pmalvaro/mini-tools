@@ -26,13 +26,17 @@ h1 {
   letter-spacing: -.06em;
 }
 
+.board,
+.controls {
+  width: min(100%, 26rem);
+  margin-inline: auto;
+}
+
 .board {
   display: grid;
   perspective: 650px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(.6rem, 3vw, 1rem);
-  width: min(100%, 26rem);
-  margin: auto;
   padding: clamp(.8rem, 4vw, 1.5rem);
   background: #171c2b;
   border: 1px solid #30374c;
@@ -47,10 +51,6 @@ h1 {
 }
 
 .controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .6rem;
-  justify-content: center;
   margin-top: 1.25rem;
 }
 
@@ -67,6 +67,7 @@ button {
 }
 
 #shuffle {
+  width: 100%;
   background: #c4d0ff;
   border-color: #c4d0ff;
   color: #151a29;
