@@ -110,7 +110,7 @@ const DiceView = (() => {
   }));
   const light = unit([-0.4, 0.65, 1]);
 
-  function draw(ctx, mesh, faceIndex, labels, progress, direction) {
+  function draw(ctx, mesh, faceIndex, labels, progress, direction, material) {
     const target = mesh[faceIndex];
     const isTenSided = labels.length === 10;
     const isHundredSided = labels.length === 100;
@@ -163,8 +163,8 @@ const DiceView = (() => {
       corners.forEach(([x, y], index) => index ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
       ctx.closePath();
       const gradient = ctx.createLinearGradient(20, 15, 104, 115);
-      gradient.addColorStop(0, `hsl(0 0% ${10 + brightness * 22}%)`);
-      gradient.addColorStop(1, `hsl(0 0% ${4 + brightness * 14}%)`);
+      gradient.addColorStop(0, `hsl(${material} ${10 + brightness * 22}%)`);
+      gradient.addColorStop(1, `hsl(${material} ${4 + brightness * 14}%)`);
       ctx.fillStyle = gradient;
       ctx.fill();
       const edgeOpacity = 0.25 * (0.18 + brightness * 0.35);
@@ -217,21 +217,22 @@ const DiceView = (() => {
       context?.scale(resolution, resolution);
       const faceIndex = value - 1;
       const direction = index % 2 ? -1 : 1;
+      const material = dice.length === 2 && index === 0 ? '27 56%' : '0 0%';
       const realtime = !reducedMotion && index < realtimeLimit;
       if (context && !realtime) {
-        draw(context, mesh, faceIndex, labels, 1, direction);
+        draw(context, mesh, faceIndex, labels, 1, direction, material);
         if (!reducedMotion) canvas.classList.add('die-light-roll');
       }
-      return { canvas, context, faceIndex, direction, realtime, delay: index * 24 };
+      return { canvas, context, faceIndex, direction, material, realtime, delay: index * 24 };
     });
 
     tray.replaceChildren(...models.map(({ canvas }) => canvas));
     let rolling = models.filter(({ realtime, context }) => realtime && context);
     const start = performance.now();
     function animate(now) {
-      rolling = rolling.filter(({ context, faceIndex, direction, delay }) => {
+      rolling = rolling.filter(({ context, faceIndex, direction, material, delay }) => {
         const progress = Math.min(1, Math.max(0, (now - start - delay) / 800));
-        draw(context, mesh, faceIndex, labels, progress, direction);
+        draw(context, mesh, faceIndex, labels, progress, direction, material);
         return progress < 1;
       });
       if (rolling.length) frame = requestAnimationFrame(animate);
