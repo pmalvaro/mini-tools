@@ -109,13 +109,15 @@ const DiceView = (() => {
     return [Number(sides), bevel(hull(vertices.map((vertex) => scale(vertex, 1 / radius))))];
   }));
   const light = unit([-0.4, 0.65, 1]);
+  const labelSizes = { 6: 35, 8: 24, 12: 26 };
 
-  function draw(ctx, mesh, faceIndex, labels, progress, direction, material) {
+  function draw(ctx, mesh, faceIndex, labels, progress, direction, material, closeUp) {
     const target = mesh[faceIndex];
     const isTenSided = labels.length === 10;
     const isHundredSided = labels.length === 100;
     const spin = (1 - progress) ** 1.7;
     const bounce = Math.abs(Math.sin(progress * Math.PI * 3)) * spin;
+    const zoom = closeUp ? 1 + 0.28 * (1 - spin) : 1;
     // The camera looks straight down the Z axis. Only the die rotates.
     const pitch = spin * 9 * direction;
     const yaw = spin * 12;
@@ -134,14 +136,14 @@ const DiceView = (() => {
     const offsetX = direction * spin * 19;
     const offsetY = -12 * spin;
     const project = ([x, y, z]) => {
-      const perspective = 43 / (1 - (z + bounce * 0.65) / 4);
+      const perspective = 43 * zoom / (1 - (z + bounce * 0.65) / 4);
       return [64 + offsetX + x * perspective, 64 + offsetY - y * perspective];
     };
 
     ctx.clearRect(0, 0, 128, 128);
     const shadowX = 69 + offsetX + bounce * 12;
     const shadowY = 71 + offsetY + bounce * 13;
-    const shadowRadius = 46 + bounce * 6;
+    const shadowRadius = 46 * zoom + bounce * 6;
     const shadow = ctx.createRadialGradient(shadowX, shadowY, 14, shadowX, shadowY, shadowRadius);
     shadow.addColorStop(0, `rgba(6, 3, 12, ${0.62 - bounce * 0.3})`);
     shadow.addColorStop(1, 'rgba(6, 3, 12, 0)');
@@ -185,13 +187,15 @@ const DiceView = (() => {
       const isWinningFace = i === faceIndex;
       const fontSize = isHundredSided
         ? 7 + (isWinningFace ? 4 * settled : 0)
-        : 19 + settled * (isWinningFace ? 5 : -3);
+        : (labelSizes[labels.length] ?? 19) + settled * (isWinningFace ? 5 : -3);
+      const value = labels[i];
+      const marked = value === 6 || value === 9;
+      const label = marked ? `${value}.` : String(value);
       ctx.globalAlpha = isWinningFace ? 1 : 1 - settled * 0.38;
-      ctx.font = `bold ${fontSize}px system-ui`;
+      ctx.font = `bold ${fontSize * zoom * (marked ? 0.9 : 1)}px system-ui`;
       ctx.strokeStyle = '#080808';
       ctx.lineWidth = isHundredSided ? 0.8 : 2;
-      const label = labels.length > 6 && labels[i] === 6 ? '6.' : String(labels[i]);
-      const textWidth = isHundredSided ? 15 : 128;
+      const textWidth = isHundredSided ? 15 * zoom : 128;
       ctx.strokeText(label, 0, 0, textWidth);
       ctx.fillStyle = '#fff';
       ctx.fillText(label, 0, 0, textWidth);
@@ -204,6 +208,7 @@ const DiceView = (() => {
     cancelAnimationFrame(frame);
     const realtimeLimit = 12;
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const closeUp = matchMedia('(max-width: 32rem)').matches;
     if (faces === 100 && !meshes.has(faces)) meshes.set(faces, hundredSidedMesh());
     const mesh = meshes.get(faces);
     const labels = Array.from({ length: faces }, (_, i) => i + 1);
@@ -220,7 +225,7 @@ const DiceView = (() => {
       const material = dice.length === 2 && index === 0 ? '27 56%' : '0 0%';
       const realtime = !reducedMotion && index < realtimeLimit;
       if (context && !realtime) {
-        draw(context, mesh, faceIndex, labels, 1, direction, material);
+        draw(context, mesh, faceIndex, labels, 1, direction, material, closeUp);
         if (!reducedMotion) canvas.classList.add('die-light-roll');
       }
       return { canvas, context, faceIndex, direction, material, realtime, delay: index * 24 };
@@ -232,7 +237,7 @@ const DiceView = (() => {
     function animate(now) {
       rolling = rolling.filter(({ context, faceIndex, direction, material, delay }) => {
         const progress = Math.min(1, Math.max(0, (now - start - delay) / 800));
-        draw(context, mesh, faceIndex, labels, progress, direction, material);
+        draw(context, mesh, faceIndex, labels, progress, direction, material, closeUp);
         return progress < 1;
       });
       if (rolling.length) frame = requestAnimationFrame(animate);

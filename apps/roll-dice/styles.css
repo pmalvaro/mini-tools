@@ -210,6 +210,17 @@ button[aria-disabled="true"] {
   width: clamp(7rem, 30vw, 10.5rem);
 }
 
+@media (max-width: 32rem) {
+  .die {
+    width: min(7.5rem, calc((100% - 0.5rem) / 3));
+    margin: 0;
+  }
+
+  .die-d100 {
+    width: min(11.5rem, calc((100% - 0.25rem) / 2));
+  }
+}
+
 .die-light-roll {
   --roll-turn: 1turn;
   animation: light-roll 800ms ease-out both;
