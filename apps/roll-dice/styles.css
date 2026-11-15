@@ -119,6 +119,10 @@ fieldset {
   aspect-ratio: 1;
 }
 
+.die-d100 {
+  width: clamp(7rem, 30vw, 10.5rem);
+}
+
 .remaining-dice {
   font-weight: 700;
 }
