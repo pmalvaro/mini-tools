@@ -1,6 +1,6 @@
 const scope = self.registration.scope;
 const cachePrefix = `mini-tools:${scope}:`;
-const cacheName = `${cachePrefix}v40`;
+const cacheName = `${cachePrefix}v41`;
 const files = [
   './',
   './index.html',
