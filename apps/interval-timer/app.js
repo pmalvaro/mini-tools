@@ -30,6 +30,8 @@ let remaining = 0;
 let lastCountdownSecond = 0;
 let interval;
 let audio;
+let screenLock;
+let requestingScreenLock = false;
 
 function loadRoutines() {
   try {
@@ -87,6 +89,31 @@ function announcePhase() {
   roundLabel.textContent = phase.round ? `Ronda ${phase.round} de ${settings().rounds}` : 'Antes de la primera ronda';
 }
 
+async function syncScreenLock() {
+  if (state !== 'running' || document.hidden) {
+    const lock = screenLock;
+    screenLock = undefined;
+    if (lock && !lock.released) await lock.release().catch(() => {});
+    return;
+  }
+
+  if (!navigator.wakeLock || requestingScreenLock || (screenLock && !screenLock.released)) return;
+
+  requestingScreenLock = true;
+  try {
+    const lock = await navigator.wakeLock.request('screen');
+    if (state === 'running' && !document.hidden) {
+      screenLock = lock;
+    } else {
+      await lock.release();
+    }
+  } catch {
+    // The timer still works if the browser cannot keep the screen awake.
+  } finally {
+    requestingScreenLock = false;
+  }
+}
+
 function syncControls() {
   const active = state === 'running' || state === 'paused';
   const editing = !editor.hidden;
@@ -101,7 +128,7 @@ function syncControls() {
 }
 
 function beep(kind) {
-  if (!sound.checked || audio?.state !== 'running') return;
+  if (document.hidden || !sound.checked || audio?.state !== 'running') return;
   const tones = { warm: [440], work: [740], rest: [420, 330], countdown: [960], done: [523, 659, 784] };
   tones[kind].forEach((frequency, index) => {
     const begin = audio.currentTime + index * .16;
@@ -125,6 +152,7 @@ function tick(now = Date.now()) {
     if (phaseIndex === plan.length) {
       clearInterval(interval);
       state = 'done';
+      void syncScreenLock();
       timer.dataset.phase = '';
       phaseLabel.textContent = 'Entrenamiento terminado';
       roundLabel.textContent = `${settings().rounds} rondas completadas`;
@@ -147,21 +175,27 @@ function tick(now = Date.now()) {
 
   // Leave room for the phase-change cue when a phase starts inside the countdown.
   const phaseStarting = phaseSeconds * 1000 - remaining < 350;
-  if (secondsLeft <= 3 && secondsLeft !== lastCountdownSecond && !phaseStarting) {
+  if (!document.hidden && secondsLeft <= 3 && secondsLeft !== lastCountdownSecond && !phaseStarting) {
     lastCountdownSecond = secondsLeft;
     beep('countdown');
   }
 }
 
+function pauseTimer(now = Date.now()) {
+  if (state !== 'running') return;
+  tick(now);
+  if (state !== 'running') return;
+  clearInterval(interval);
+  state = 'paused';
+  void syncScreenLock();
+  phaseLabel.textContent = `En pausa · ${phaseNames[plan[phaseIndex].kind]}`;
+  syncControls();
+}
+
 startButton.addEventListener('click', () => {
   const now = Date.now();
   if (state === 'running') {
-    tick(now);
-    if (state !== 'running') return;
-    clearInterval(interval);
-    state = 'paused';
-    phaseLabel.textContent = `En pausa · ${phaseNames[plan[phaseIndex].kind]}`;
-    syncControls();
+    pauseTimer(now);
     return;
   }
   const restarting = state !== 'paused';
@@ -172,6 +206,7 @@ startButton.addEventListener('click', () => {
     remaining = plan[0].seconds * 1000;
   }
   state = 'running';
+  void syncScreenLock();
   deadline = now + remaining;
   announcePhase();
   syncControls();
@@ -195,6 +230,7 @@ startButton.addEventListener('click', () => {
 function resetTimer() {
   clearInterval(interval);
   state = 'idle';
+  void syncScreenLock();
   timer.dataset.phase = '';
   phaseLabel.textContent = 'En espera';
   roundLabel.textContent = 'Tiempo total';
@@ -347,7 +383,7 @@ document.querySelector('#cancel').addEventListener('click', () => {
 });
 resetButton.addEventListener('click', resetTimer);
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) tick();
+  if (document.hidden) pauseTimer();
 });
 renderRoutines();
 preview();
