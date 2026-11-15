@@ -76,10 +76,10 @@ function displayTime(ms, fraction) {
 
 function preview() {
   if (state !== 'idle') return;
-  const total = form.checkValidity()
+  const total = selectedId !== null && form.checkValidity()
     ? buildPlan(settings()).reduce((sum, phase) => sum + phase.seconds, 0)
     : 0;
-  displayTime(total * 1000, 1);
+  displayTime(total * 1000, total > 0 ? 1 : 0);
 }
 
 function announcePhase() {
@@ -118,7 +118,7 @@ function syncControls() {
   const active = state === 'running' || state === 'paused';
   const editing = !editor.hidden;
   fields.disabled = active;
-  startButton.disabled = editing;
+  startButton.disabled = editing || selectedId === null;
   resetButton.disabled = editing || state === 'idle';
   createButton.disabled = active || editing;
   startButton.textContent = {
@@ -233,7 +233,7 @@ function resetTimer() {
   void syncScreenLock();
   timer.dataset.phase = '';
   phaseLabel.textContent = 'En espera';
-  roundLabel.textContent = 'Tiempo total';
+  roundLabel.textContent = selectedId === null ? 'Elige o crea una rutina' : 'Tiempo total';
   syncControls();
   preview();
 }
