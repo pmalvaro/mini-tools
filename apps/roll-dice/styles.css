@@ -99,6 +99,30 @@ fieldset {
   color: #fff;
 }
 
+.dice-tray:not(:empty) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 1.5rem 0.75rem;
+  overflow: hidden;
+  border: 1px solid #594872;
+  border-radius: 1rem;
+  background: radial-gradient(ellipse at top, #3c3057, #201831 80%);
+  color: #fff;
+}
+
+.die {
+  width: clamp(4.25rem, 18vw, 6.5rem);
+  aspect-ratio: 1;
+}
+
+.remaining-dice {
+  font-weight: 700;
+}
+
 #result {
   margin-top: 1rem;
   font-weight: 600;

@@ -1,6 +1,7 @@
 const form = document.querySelector('#dice');
 const quantity = document.querySelector('#quantity');
 const sides = form.elements.namedItem('sides');
+const tray = document.querySelector('#tray');
 const result = document.querySelector('#result');
 
 for (const button of form.querySelectorAll('[data-step]')) {
@@ -20,6 +21,7 @@ form.addEventListener('submit', (event) => {
   const dice = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * faces));
   const total = dice.reduce((sum, die) => sum + die, 0);
   const details = count > 1 ? ` · Dados: ${dice.join(', ')}` : '';
+  DiceView.render(tray, dice, faces);
   result.textContent = `${count}d${faces} · Total: ${total}${details}`;
 });
 

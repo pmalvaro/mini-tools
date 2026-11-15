@@ -1,11 +1,12 @@
 const scope = self.registration.scope;
 const cachePrefix = `mini-tools:${scope}:`;
-const cacheName = `${cachePrefix}v5`;
+const cacheName = `${cachePrefix}v12`;
 const files = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './dice-view.js',
   './manifest.webmanifest',
   './icons/icon-180.png',
   './icons/icon-192.png',
