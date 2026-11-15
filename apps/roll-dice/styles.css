@@ -13,3 +13,94 @@ main {
   margin: 0 auto;
   padding: 3rem 1.25rem;
 }
+
+label, output {
+  display: block;
+}
+
+input[type="number"], button, .dice-types span {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid GrayText;
+  border-radius: 0.5rem;
+  font: inherit;
+}
+
+button, .dice-types label {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: 3px;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.dice-types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr));
+  gap: 0.5rem;
+}
+
+.dice-types label {
+  position: relative;
+}
+
+.dice-types input {
+  position: absolute;
+  opacity: 0;
+  margin: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.dice-types span {
+  display: grid;
+  place-items: center;
+}
+
+.dice-types input:checked + span {
+  background: #292044;
+  color: #fff;
+  font-weight: 700;
+}
+
+.dice-types input:focus-visible + span {
+  outline: 2px solid Highlight;
+  outline-offset: 3px;
+}
+
+.quantity-field {
+  margin-block: 1rem;
+}
+
+.stepper {
+  display: inline-grid;
+  grid-template-columns: 2.75rem 5rem 2.75rem;
+  gap: 0.5rem;
+}
+
+.stepper input {
+  min-width: 0;
+  text-align: center;
+}
+
+#roll {
+  background: #292044;
+  color: #fff;
+}
+
+#result {
+  margin-top: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
