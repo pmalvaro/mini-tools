@@ -26,7 +26,7 @@ body {
 main {
   max-width: 38rem;
   margin: 0 auto;
-  padding: 3rem 1.25rem;
+  padding: 3rem clamp(0.5rem, 3vw, 1.25rem);
 }
 
 label, output {
@@ -60,14 +60,60 @@ fieldset {
   padding: 0;
 }
 
+.dice-picker {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
 .dice-types {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr));
+  --fade-left: 0px;
+  --fade-right: 0px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 5px;
+  padding-inline: var(--track-inset, 5px);
+  scroll-padding-inline: 5px;
+}
+
+.dice-track {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
   gap: 0.5rem;
+}
+
+.dice-picker:has(> .dice-arrow:first-child:not([hidden])[aria-disabled="false"]) .dice-types {
+  --fade-left: 0.9rem;
+}
+
+.dice-picker:has(> .dice-arrow:last-child:not([hidden])[aria-disabled="false"]) .dice-types {
+  --fade-right: 0.9rem;
+}
+
+.dice-picker:has(> .dice-arrow:not([hidden])[aria-disabled="false"]) .dice-types {
+  mask-image: linear-gradient(to right, transparent, black var(--fade-left),
+    black calc(100% - var(--fade-right)), transparent);
+}
+
+.dice-arrow {
+  flex: 0 0 2.75rem;
+  margin-top: 5px;
+  padding: 0;
+  color: var(--accent);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.dice-arrow[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .dice-types label {
   position: relative;
+  flex: 1 0 4rem;
 }
 
 .dice-types input {
@@ -100,7 +146,8 @@ fieldset {
 
 @media (hover: hover) {
   .dice-types label:hover input:not(:checked) + span,
-  .stepper button:hover {
+  .stepper button:hover,
+  .dice-arrow:not([aria-disabled="true"]):hover {
     background: var(--surface-hover);
   }
 
@@ -110,18 +157,26 @@ fieldset {
   }
 }
 
+.roll-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
 .quantity-field {
-  margin-block: 1rem;
+  min-width: 8.75rem;
 }
 
 .stepper {
-  display: inline-grid;
-  grid-template-columns: 2.75rem 5rem 2.75rem;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(2.25rem, 5rem) 2.75rem;
   gap: 0.5rem;
 }
 
 .stepper input {
   min-width: 0;
+  padding-inline: 0.25rem;
   text-align: center;
 }
 
@@ -130,9 +185,9 @@ fieldset {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.25rem;
   margin-top: 1rem;
-  padding: 1.5rem 0.75rem;
+  padding: 0.85rem 0.5rem;
   overflow: hidden;
   border: 1px solid var(--felt-edge);
   border-radius: 1rem;
@@ -144,6 +199,7 @@ fieldset {
 .die {
   width: clamp(4.25rem, 18vw, 6.5rem);
   aspect-ratio: 1;
+  margin: -0.5rem;
 }
 
 .die-d100 {
