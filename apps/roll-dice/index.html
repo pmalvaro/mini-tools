@@ -16,8 +16,7 @@
   <main>
     <h1>Roll Dice</h1>
     <form id="dice" autocomplete="off">
-      <fieldset>
-        <legend>Tipo de dado</legend>
+      <fieldset aria-label="Tipo de dado">
         <div class="dice-types">
           <label><input type="radio" name="sides" value="4" required><span>D4</span></label>
           <label><input type="radio" name="sides" value="6"><span>D6</span></label>
@@ -29,13 +28,10 @@
         </div>
       </fieldset>
       <div class="roll-controls">
-        <div class="quantity-field">
-          <div id="quantity-label">Número de dados</div>
-          <div class="stepper">
-            <button id="remove-die" type="button" aria-label="Quitar un dado">−</button>
-            <output id="quantity" for="remove-die add-die" aria-labelledby="quantity-label">1</output>
-            <button id="add-die" type="button" aria-label="Añadir un dado">+</button>
-          </div>
+        <div class="stepper">
+          <button id="remove-die" type="button" aria-label="Quitar un dado">−</button>
+          <output id="quantity" for="remove-die add-die" aria-label="Número de dados">1</output>
+          <button id="add-die" type="button" aria-label="Añadir un dado">+</button>
         </div>
         <button id="roll" type="submit">Lanzar</button>
       </div>
