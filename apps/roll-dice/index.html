@@ -18,20 +18,14 @@
     <form id="dice" autocomplete="off">
       <fieldset>
         <legend>Tipo de dado</legend>
-        <div class="dice-picker">
-          <button class="dice-arrow" type="button" aria-label="Ver dados a la izquierda" aria-controls="dice-types" hidden><span aria-hidden="true">‹</span></button>
-          <div class="dice-types" id="dice-types">
-            <div class="dice-track">
-              <label><input type="radio" name="sides" value="4" required><span>D4</span></label>
-              <label><input type="radio" name="sides" value="6"><span>D6</span></label>
-              <label><input type="radio" name="sides" value="8"><span>D8</span></label>
-              <label><input type="radio" name="sides" value="10"><span>D10</span></label>
-              <label><input type="radio" name="sides" value="12"><span>D12</span></label>
-              <label><input type="radio" name="sides" value="20" checked><span>D20</span></label>
-              <label><input type="radio" name="sides" value="100"><span>D100</span></label>
-            </div>
-          </div>
-          <button class="dice-arrow" type="button" aria-label="Ver dados a la derecha" aria-controls="dice-types" hidden><span aria-hidden="true">›</span></button>
+        <div class="dice-types">
+          <label><input type="radio" name="sides" value="4" required><span>D4</span></label>
+          <label><input type="radio" name="sides" value="6"><span>D6</span></label>
+          <label><input type="radio" name="sides" value="8"><span>D8</span></label>
+          <label><input type="radio" name="sides" value="10"><span>D10</span></label>
+          <label><input type="radio" name="sides" value="12"><span>D12</span></label>
+          <label><input type="radio" name="sides" value="20" checked><span>D20</span></label>
+          <label><input type="radio" name="sides" value="100"><span>D100</span></label>
         </div>
       </fieldset>
       <div class="roll-controls">
