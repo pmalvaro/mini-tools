@@ -7,6 +7,7 @@ const editor = document.querySelector('#editor');
 const createButton = document.querySelector('#create');
 const activeTitle = document.querySelector('#active-title');
 const sound = document.querySelector('#sound');
+const volumeButton = document.querySelector('#volume');
 const timer = document.querySelector('.timer');
 const dial = document.querySelector('.dial');
 const phaseLabel = document.querySelector('#phase');
@@ -16,6 +17,7 @@ const list = document.querySelector('#routines');
 const message = document.querySelector('#message');
 const storageKey = 'mini-tools:interval-timer:routines';
 const limit = 10;
+const volumeLevels = [100, 130, 160];
 const phaseNames = { warm: 'Calentamiento', work: 'Actividad', rest: 'Descanso' };
 
 let routines = loadRoutines();
@@ -30,6 +32,7 @@ let remaining = 0;
 let lastCountdownSecond = 0;
 let interval;
 let audio;
+let volumeLevelIndex = -1;
 let screenLock;
 let requestingScreenLock = false;
 
@@ -127,17 +130,31 @@ function syncControls() {
   list.querySelectorAll('button').forEach((button) => { button.disabled = active || editing; });
 }
 
+async function resumeAudio() {
+  if (!window.AudioContext) return;
+  try {
+    audio ??= new AudioContext();
+    await audio.resume();
+  } catch {
+    // The timer also works on devices without audio output.
+  }
+}
+
 function beep(kind) {
   if (document.hidden || !sound.checked || audio?.state !== 'running') return;
   const tones = { warm: [440], work: [740], rest: [420, 330], countdown: [960], done: [523, 659, 784] };
+  const loudnessRatio = (volumeLevels[volumeLevelIndex] ?? volumeLevels[0]) / 100;
+  // Approximate perceived loudness for these tones as gain raised to 0.6.
+  const gainMultiplier = loudnessRatio ** (1 / 0.6);
   tones[kind].forEach((frequency, index) => {
     const begin = audio.currentTime + index * .16;
     const oscillator = audio.createOscillator();
     const volume = audio.createGain();
     if (kind === 'countdown') oscillator.type = 'triangle';
     oscillator.frequency.value = frequency;
-    volume.gain.setValueAtTime(kind === 'countdown' ? .25 : .14, begin);
-    volume.gain.exponentialRampToValueAtTime(.001, begin + .14);
+    const peakGain = kind === 'countdown' ? .25 : .14;
+    volume.gain.setValueAtTime(peakGain * gainMultiplier, begin);
+    volume.gain.exponentialRampToValueAtTime(.001 * gainMultiplier, begin + .14);
     oscillator.connect(volume).connect(audio.destination);
     oscillator.start(begin);
     oscillator.stop(begin + .15);
@@ -213,14 +230,9 @@ startButton.addEventListener('click', () => {
   tick(now);
   interval = setInterval(tick, 100);
   if (sound.checked && window.AudioContext) {
-    try {
-      audio ??= new AudioContext();
-      audio.resume().then(() => {
-        if (restarting && state === 'running' && phaseIndex === 0) beep(plan[0].kind);
-      }).catch(() => {});
-    } catch {
-      // The timer also works on devices without audio output.
-    }
+    void resumeAudio().then(() => {
+      if (restarting && state === 'running' && phaseIndex === 0) beep(plan[0].kind);
+    });
   } else {
     audio?.close().catch(() => {});
     audio = undefined;
@@ -382,6 +394,17 @@ document.querySelector('#cancel').addEventListener('click', () => {
   editorTrigger.focus();
 });
 resetButton.addEventListener('click', resetTimer);
+volumeButton.addEventListener('click', async () => {
+  volumeLevelIndex = (volumeLevelIndex + 1) % volumeLevels.length;
+  const label = `Volumen de los avisos al ${volumeLevels[volumeLevelIndex]} %`;
+  volumeButton.dataset.level = volumeLevelIndex + 1;
+  volumeButton.setAttribute('aria-label', label);
+  volumeButton.title = label;
+
+  if (!sound.checked || state === 'running') return;
+  await resumeAudio();
+  if (state !== 'running') beep('countdown');
+});
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pauseTimer();
 });

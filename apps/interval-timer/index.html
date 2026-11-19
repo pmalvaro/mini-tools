@@ -18,7 +18,16 @@
     </header>
     <div class="layout">
       <section class="timer" aria-label="Temporizador">
-        <h2 id="active-title" hidden></h2>
+        <div class="timer-header">
+          <h2 id="active-title" hidden></h2>
+          <button id="volume" type="button" data-level="1" aria-label="Volumen de los avisos al 100 %" title="Volumen de los avisos al 100 %">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M2 9h4l5-4v14l-5-4H2z M14 9a4.5 4.5 0 0 1 0 6"/>
+              <path class="volume-wave" d="M16 6.5a8 8 0 0 1 0 11"/>
+              <path class="volume-wave" d="M18 4a11.5 11.5 0 0 1 0 16"/>
+            </svg>
+          </button>
+        </div>
         <div class="dial">
           <div class="dial-face">
             <p id="phase" role="status">En espera</p>
